@@ -1,9 +1,10 @@
+backend/node_modules/
+backend/.env
+backend/*.log
+backend/database.sqlite
+frontend/node_modules/
 node_modules/
-.env
-*.log
 .DS_Store
 dist/
 coverage/
 .nyc_output/
-database.sqlite
-
