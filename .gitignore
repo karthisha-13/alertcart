@@ -1,0 +1,9 @@
+node_modules/
+.env
+*.log
+.DS_Store
+dist/
+coverage/
+.nyc_output/
+database.sqlite
+

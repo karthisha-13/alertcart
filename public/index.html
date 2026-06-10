@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AlertCart – Price Drop Notifier</title>
+  <link rel="stylesheet" href="/css/style.css" />
+  <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>🛒</text></svg>" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- LOGIN SCREEN -->
+  <div id="login-screen" class="login-screen">
+    <div class="login-card">
+      <div class="login-logo">
+        <span style="font-size:2.8rem">🛒</span>
+        <h1 class="login-title">AlertCart</h1>
+        <p class="login-sub">Price Drop Notifier · Sign in to continue</p>
+      </div>
+      <div id="login-error" class="alert alert-error hidden"></div>
+      <div class="form-group">
+        <label for="login-username">Username</label>
+        <input type="text" id="login-username" placeholder="admin" autocomplete="username" />
+      </div>
+      <div class="form-group">
+        <label for="login-password">Password</label>
+        <input type="password" id="login-password" placeholder="password" autocomplete="current-password" />
+      </div>
+      <button class="btn btn-primary" id="login-btn" style="width:100%;margin-top:6px" onclick="doLogin()">
+        🔐 Sign In
+      </button>
+      <p class="login-hint">Default: <strong>admin</strong> / <strong>admin123</strong></p>
+    </div>
+  </div>
+
+  <!-- MAIN APP (hidden until login) -->
+  <div id="app-shell" class="app-shell hidden">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <div class="sidebar-logo">
+        <span class="sidebar-logo-icon">🛒</span>
+        <span class="sidebar-logo-text">AlertCart</span>
+      </div>
+      <nav class="sidebar-nav">
+        <a href="#" class="nav-item active" data-page="dashboard"><span class="nav-icon">📊</span> Dashboard</a>
+        <a href="#" class="nav-item" data-page="products"><span class="nav-icon">📦</span> Products</a>
+        <a href="#" class="nav-item" data-page="add"><span class="nav-icon">➕</span> Add Product</a>
+        <a href="#" class="nav-item" data-page="alerts"><span class="nav-icon">🔔</span> Alerts</a>
+        <a href="#" class="nav-item" data-page="payments"><span class="nav-icon">💳</span> Payments</a>
+        <a href="#" class="nav-item" data-page="settings"><span class="nav-icon">⚙️</span> Settings</a>
+      </nav>
+      <div class="sidebar-user">
+        <div class="user-avatar" id="user-avatar-letter">A</div>
+        <div class="user-info">
+          <div class="user-name" id="sidebar-username">Admin</div>
+          <div class="user-role">Price Tracker</div>
+        </div>
+        <button class="logout-btn" onclick="doLogout()">⏻ Logout</button>
+      </div>
+    </aside>
+
+    <!-- MAIN -->
+    <div class="main-wrapper">
+      <header class="topbar">
+        <div class="topbar-title" id="page-title">Dashboard</div>
+        <div class="topbar-right" id="topbar-clock"></div>
+      </header>
+
+      <!-- DASHBOARD PAGE -->
+      <div id="page-dashboard" class="page active">
+        <div class="page-header">
+          <h1 class="page-h1">📊 Dashboard</h1>
+          <p class="page-sub">Welcome back! Here's your price tracking overview.</p>
+        </div>
+        <div class="stat-grid">
+          <div class="stat-card stat-total"><div class="stat-card-icon">📦</div><div class="stat-card-body"><div class="stat-card-num" id="stat-total">0</div><div class="stat-card-label">TOTAL PRODUCTS</div></div></div>
+          <div class="stat-card stat-alerted"><div class="stat-card-icon">🔔</div><div class="stat-card-body"><div class="stat-card-num" id="stat-alerted">0</div><div class="stat-card-label">ALERTS SENT</div></div></div>
+          <div class="stat-card stat-amazon"><div class="stat-card-icon">🛍️</div><div class="stat-card-body"><div class="stat-card-num" id="stat-amazon">0</div><div class="stat-card-label">AMAZON</div></div></div>
+          <div class="stat-card stat-flipkart"><div class="stat-card-icon">🏪</div><div class="stat-card-body"><div class="stat-card-num" id="stat-flipkart">0</div><div class="stat-card-label">FLIPKART</div></div></div>
+        </div>
+        <div class="stat-grid stat-grid-5">
+          <div class="stat-card stat-myntra"><div class="stat-card-icon">👗</div><div class="stat-card-body"><div class="stat-card-num" id="stat-myntra">0</div><div class="stat-card-label">MYNTRA</div></div></div>
+          <div class="stat-card stat-ajio"><div class="stat-card-icon">👔</div><div class="stat-card-body"><div class="stat-card-num" id="stat-ajio">0</div><div class="stat-card-label">AJIO</div></div></div>
+          <div class="stat-card stat-nykaa"><div class="stat-card-icon">💄</div><div class="stat-card-body"><div class="stat-card-num" id="stat-nykaa">0</div><div class="stat-card-label">NYKAA</div></div></div>
+          <div class="stat-card stat-tata"><div class="stat-card-icon">💙</div><div class="stat-card-body"><div class="stat-card-num" id="stat-tata">0</div><div class="stat-card-label">TATA / 1MG</div></div></div>
+          <div class="stat-card stat-purplle"><div class="stat-card-icon">💜</div><div class="stat-card-body"><div class="stat-card-num" id="stat-purplle">0</div><div class="stat-card-label">PURPLLE</div></div></div>
+        </div>
+        <div class="dashboard-card">
+          <div class="dashboard-card-header">
+            <div class="dashboard-card-title">❓ Recent Products</div>
+            <button class="view-all-btn" data-page="products">View All →</button>
+          </div>
+          <div id="recent-list"><div class="empty-state"><div class="empty-icon">📭</div><p>No products tracked yet. Add your first product!</p></div></div>
+        </div>
+      </div>
+
+      <!-- PRODUCTS PAGE -->
+      <div id="page-products" class="page">
+        <div class="page-header">
+          <h1 class="page-h1">📦 Products</h1>
+          <button class="btn btn-primary btn-sm" onclick="loadProducts()">🔄 Refresh</button>
+        </div>
+        <div id="productList"><div class="empty-state"><div class="empty-icon">📭</div><p>No products tracked yet.</p></div></div>
+      </div>
+
+      <!-- ADD PAGE -->
+      <div id="page-add" class="page">
+        <div class="page-header"><h1 class="page-h1">➕ Add Product</h1></div>
+        <div class="dashboard-card" style="max-width:640px">
+          <div id="form-alert" class="alert hidden"></div>
+          <form id="addProductForm">
+            <div class="form-group">
+              <label for="productURL">Product URL <span class="req">*</span></label>
+              <input type="url" id="productURL" placeholder="Paste URL from Amazon, Flipkart, Myntra, Ajio, Nykaa, TataCliq, 1mg, Tira or Purplle…" required />
+              <div class="url-hint">Supported: <strong>amazon.in</strong> · <strong>flipkart.com</strong> · <strong>myntra.com</strong> · <strong>ajio.com</strong> · <strong>nykaa.com</strong> · <strong>tatacliq.com</strong> · <strong>1mg.com</strong> · <strong>tira.com</strong> · <strong>purplle.com</strong></div>
+            </div>
+            <div class="form-row">
+              <div class="form-group">
+                <label for="targetPrice">Target Price (₹) <span class="req">*</span></label>
+                <input type="number" id="targetPrice" placeholder="e.g. 1499" min="1" required />
+              </div>
+              <div class="form-group">
+                <label for="userEmail">Alert Email <span class="req">*</span></label>
+                <input type="email" id="userEmail" placeholder="you@email.com" required />
+              </div>
+              <div class="form-group">
+                <label for="userPhone">Alert Phone (optional)</label>
+                <input type="tel" id="userPhone" placeholder="+919876543210" />
+              </div>
+            </div>
+            <button type="submit" class="btn btn-primary" id="addBtn">
+              <span id="addBtnText">⚡ Start Tracking</span>
+              <span id="addBtnLoader" class="hidden">⏳ Adding…</span>
+            </button>
+          </form>
+        </div>
+        <div class="platforms-bar" style="margin-top:20px">
+          <span class="platform-pill pill-amazon">🟠 Amazon</span>
+          <span class="platform-pill pill-flipkart">🔵 Flipkart</span>
+          <span class="platform-pill pill-myntra">🩷 Myntra</span>
+          <span class="platform-pill pill-ajio">🔴 Ajio</span>
+          <span class="platform-pill pill-nykaa">💄 Nykaa</span>
+          <span class="platform-pill pill-tata">💙 Tata / 1mg / Tira</span>
+          <span class="platform-pill pill-purplle">💜 Purplle</span>
+        </div>
+      </div>
+
+      <!-- ALERTS PAGE -->
+      <div id="page-alerts" class="page">
+        <div class="page-header"><h1 class="page-h1">🔔 Alerts</h1></div>
+        <div class="dashboard-card">
+          <div id="alerts-list"><div class="empty-state"><div class="empty-icon">🔕</div><p>No alerts sent yet. Add products and set target prices to receive alerts.</p></div></div>
+        </div>
+      </div>
+
+      <!-- PAYMENTS PAGE -->
+      <div id="page-payments" class="page">
+        <div class="page-header">
+          <h1 class="page-h1">💳 Payments</h1>
+          <p class="page-sub">Manage your payment methods and billing history.</p>
+        </div>
+
+        <div class="dashboard-card" style="max-width:700px;margin-bottom:24px">
+          <div class="dashboard-card-header">
+            <div class="dashboard-card-title">💳 Saved Payment Methods</div>
+            <button class="btn btn-primary btn-sm" onclick="showAddPayment()">+ Add New</button>
+          </div>
+          <div id="payment-methods-list">
+            <div class="payment-method-row">
+              <div class="pm-icon pm-visa">VISA</div>
+              <div class="pm-info">
+                <div class="pm-name">Visa ending in 4242</div>
+                <div class="pm-sub">Expires 08/2027 · Default</div>
+              </div>
+              <span class="badge" style="background:#eafaf1;color:#1e8449;border:1px solid #27ae6033">✓ Default</span>
+            </div>
+            <div class="payment-method-row">
+              <div class="pm-icon pm-upi">UPI</div>
+              <div class="pm-info">
+                <div class="pm-name">UPI – user@oksbi</div>
+                <div class="pm-sub">Linked via BHIM</div>
+              </div>
+              <button class="btn btn-sm btn-del" onclick="removePayment(this)">🗑️ Remove</button>
+            </div>
+          </div>
+        </div>
+
+        <div id="add-payment-section" class="dashboard-card hidden" style="max-width:700px;margin-bottom:24px">
+          <div class="dashboard-card-header">
+            <div class="dashboard-card-title">➕ Add Payment Method</div>
+            <button class="btn btn-sm btn-secondary" onclick="hideAddPayment()">✕ Cancel</button>
+          </div>
+          <div class="pay-tabs">
+            <button class="pay-tab active" onclick="switchPayTab(this,'tab-card')">💳 Card</button>
+            <button class="pay-tab" onclick="switchPayTab(this,'tab-upi')">📱 UPI</button>
+            <button class="pay-tab" onclick="switchPayTab(this,'tab-netbanking')">🏦 Net Banking</button>
+            <button class="pay-tab" onclick="switchPayTab(this,'tab-wallet')">👛 Wallet</button>
+          </div>
+
+          <div id="tab-card" class="pay-tab-content active">
+            <div class="form-group">
+              <label>Card Number</label>
+              <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" oninput="formatCardNumber(this)" />
+            </div>
+            <div class="form-row">
+              <div class="form-group"><label>Card Holder Name</label><input type="text" id="card-name" placeholder="Name on card" /></div>
+              <div class="form-group" style="max-width:130px"><label>Expiry</label><input type="text" id="card-expiry" placeholder="MM/YY" maxlength="5" oninput="formatExpiry(this)" /></div>
+              <div class="form-group" style="max-width:110px"><label>CVV</label><input type="password" id="card-cvv" placeholder="•••" maxlength="4" /></div>
+            </div>
+            <button class="btn btn-primary" onclick="saveCard()">💾 Save Card</button>
+          </div>
+
+          <div id="tab-upi" class="pay-tab-content hidden">
+            <div class="form-group"><label>UPI ID</label><input type="text" id="upi-id" placeholder="yourname@upi or phone@bank" /></div>
+            <div class="upi-apps">
+              <div class="upi-app-btn" onclick="selectUpiApp(this,'GPay')"><span style="font-size:1.5rem">🔵</span><span>GPay</span></div>
+              <div class="upi-app-btn" onclick="selectUpiApp(this,'PhonePe')"><span style="font-size:1.5rem">💜</span><span>PhonePe</span></div>
+              <div class="upi-app-btn" onclick="selectUpiApp(this,'Paytm')"><span style="font-size:1.5rem">🔵</span><span>Paytm</span></div>
+              <div class="upi-app-btn" onclick="selectUpiApp(this,'BHIM')"><span style="font-size:1.5rem">🟠</span><span>BHIM</span></div>
+            </div>
+            <button class="btn btn-primary" onclick="saveUPI()">💾 Link UPI</button>
+          </div>
+
+          <div id="tab-netbanking" class="pay-tab-content hidden">
+            <div class="form-group">
+              <label>Select Bank</label>
+              <select id="bank-select" style="padding:10px 14px;border-radius:8px;border:1.5px solid var(--border);width:100%;font-size:0.95rem">
+                <option value="">-- Choose your bank --</option>
+                <option>State Bank of India (SBI)</option>
+                <option>HDFC Bank</option>
+                <option>ICICI Bank</option>
+                <option>Axis Bank</option>
+                <option>Kotak Mahindra Bank</option>
+                <option>Punjab National Bank</option>
+                <option>Bank of Baroda</option>
+                <option>Canara Bank</option>
+                <option>IndusInd Bank</option>
+                <option>Yes Bank</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="saveNetBanking()">🏦 Proceed to Bank</button>
+          </div>
+
+          <div id="tab-wallet" class="pay-tab-content hidden">
+            <p style="color:var(--text-muted);margin-bottom:16px;font-size:0.92rem">Select a wallet to link:</p>
+            <div class="upi-apps">
+              <div class="upi-app-btn" onclick="selectWallet(this,'Paytm Wallet')"><span style="font-size:1.5rem">🔵</span><span>Paytm</span></div>
+              <div class="upi-app-btn" onclick="selectWallet(this,'Amazon Pay')"><span style="font-size:1.5rem">🟠</span><span>Amazon Pay</span></div>
+              <div class="upi-app-btn" onclick="selectWallet(this,'Mobikwik')"><span style="font-size:1.5rem">🔴</span><span>Mobikwik</span></div>
+              <div class="upi-app-btn" onclick="selectWallet(this,'Freecharge')"><span style="font-size:1.5rem">🟢</span><span>Freecharge</span></div>
+            </div>
+            <button class="btn btn-primary" onclick="saveWallet()">👛 Link Wallet</button>
+          </div>
+        </div>
+
+        <div class="dashboard-card" style="max-width:700px">
+          <div class="dashboard-card-header"><div class="dashboard-card-title">🧾 Billing History</div></div>
+          <table class="billing-table">
+            <thead><tr><th>Date</th><th>Description</th><th>Amount</th><th>Status</th></tr></thead>
+            <tbody>
+              <tr><td>01 Apr 2026</td><td>AlertCart Pro – Monthly</td><td>₹299</td><td><span class="badge" style="background:#eafaf1;color:#1e8449;border:1px solid #27ae6033">✓ Paid</span></td></tr>
+              <tr><td>01 Mar 2026</td><td>AlertCart Pro – Monthly</td><td>₹299</td><td><span class="badge" style="background:#eafaf1;color:#1e8449;border:1px solid #27ae6033">✓ Paid</span></td></tr>
+              <tr><td>01 Feb 2026</td><td>AlertCart Pro – Monthly</td><td>₹299</td><td><span class="badge" style="background:#eafaf1;color:#1e8449;border:1px solid #27ae6033">✓ Paid</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      <!-- SETTINGS PAGE -->
+      <div id="page-settings" class="page">
+        <div class="page-header"><h1 class="page-h1">⚙️ Settings</h1></div>
+        <div class="dashboard-card" style="max-width:540px">
+          <div class="settings-row">
+            <div><div class="settings-label">Auto-refresh interval</div><div class="settings-sub">Products are checked every 60 seconds</div></div>
+            <span class="badge" style="background:#e8f0fe;color:#1a5ac4;border:1px solid #2874f033">60s</span>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">Supported Platforms</div><div class="settings-sub">Amazon · Flipkart · Myntra · Ajio · Nykaa · Tata/1mg/Tira · Purplle</div></div>
+            <span class="badge" style="background:#eafaf1;color:#1e8449;border:1px solid #27ae6033">7 Active</span>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">Email Alerts</div><div class="settings-sub">Sent when current price drops to or below target</div></div>
+            <span class="badge" style="background:#eafaf1;color:#1e8449;border:1px solid #27ae6033">✓ Enabled</span>
+          </div>
+          <div class="settings-row">
+            <div><div class="settings-label">Change Password</div><div class="settings-sub">Update your login credentials</div></div>
+            <button class="btn btn-sm btn-secondary" onclick="showChangePassword()">🔑 Change</button>
+          </div>
+        </div>
+        <div id="change-password-panel" class="dashboard-card hidden" style="max-width:540px;margin-top:16px">
+          <div class="dashboard-card-header">
+            <div class="dashboard-card-title">🔑 Change Password</div>
+            <button class="btn btn-sm btn-secondary" onclick="hideChangePassword()">✕</button>
+          </div>
+          <div class="form-group"><label>Current Password</label><input type="password" id="old-password" placeholder="Enter current password" /></div>
+          <div class="form-group"><label>New Password</label><input type="password" id="new-password" placeholder="Enter new password" /></div>
+          <div class="form-group"><label>Confirm New Password</label><input type="password" id="confirm-password" placeholder="Confirm new password" /></div>
+          <button class="btn btn-primary" onclick="changePassword()">💾 Update Password</button>
+        </div>
+      </div>
+
+    </div><!-- end .main-wrapper -->
+
+    <!-- EDIT MODAL -->
+    <div id="editModal" class="modal-overlay hidden">
+      <div class="modal">
+        <div class="modal-header"><h3>✏️ Edit Product</h3><button class="modal-close" onclick="closeModal()">✕</button></div>
+        <div class="modal-body">
+          <input type="hidden" id="editId" />
+          <div class="form-group"><label for="editTargetPrice">Target Price (₹)</label><input type="number" id="editTargetPrice" min="1" /></div>
+          <div class="form-group"><label for="editUserEmail">Alert Email</label><input type="email" id="editUserEmail" /></div>
+          <div class="form-group"><label for="editUserPhone">Alert Phone (optional)</label><input type="tel" id="editUserPhone" placeholder="+919876543210" /></div>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+          <button class="btn btn-primary" onclick="saveEdit()">💾 Save Changes</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- LOGOUT CONFIRM MODAL -->
+    <div id="logoutModal" class="modal-overlay hidden">
+      <div class="modal" style="max-width:380px">
+        <div class="modal-header"><h3>⏻ Sign Out</h3><button class="modal-close" onclick="cancelLogout()">✕</button></div>
+        <div class="modal-body" style="text-align:center;padding:24px 20px">
+          <div style="font-size:3rem;margin-bottom:12px">👋</div>
+          <p style="font-size:1rem;color:var(--text)">Are you sure you want to sign out of AlertCart?</p>
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" onclick="cancelLogout()">Cancel</button>
+          <button class="btn btn-primary" style="background:#e74c3c" onclick="confirmLogout()">⏻ Yes, Sign Out</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- TOAST -->
+    <div id="toast" class="toast hidden"></div>
+
+  </div><!-- end #app-shell -->
+
+  <script src="/js/app.js"></script>
+</body>
+</html>
